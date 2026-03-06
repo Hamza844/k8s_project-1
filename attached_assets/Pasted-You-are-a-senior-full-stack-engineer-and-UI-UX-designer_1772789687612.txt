@@ -1,0 +1,65 @@
+You are a senior full-stack engineer and UI/UX designer.
+Build a modern blog web application using a 2-tier architecture where:
+Frontend → Database
+The frontend should communicate directly with the database using a secure SDK such as Supabase or Firebase (do not build a backend API layer).
+Tech Stack
+Use modern technologies:
+* Frontend: **Next.js (latest version)
+* Styling: TailwindCSS
+* Database: Supabase (PostgreSQL) or Firebase Firestore
+* Authentication: Email/Password + Google OAuth
+* State management: React hooks or modern state management
+UI/UX Requirements
+The website must look like a modern professional blog platform similar to Medium or Hashnode.
+Requirements:
+* fully responsive design
+* clean typography
+* dark mode + light mode
+* modern animations
+* mobile friendly
+* SEO optimized pages
+Core Features
+1. Authentication
+* Sign up
+* Login
+* Logout
+* Google login
+* User profile page
+1. Blog Management
+* Create blog post
+* Edit blog post
+* Delete blog post
+* Draft and publish system
+* Rich text editor for writing posts
+1. Blog Display
+* Homepage with latest posts
+* Blog post page
+* Author page
+* Category filtering
+* Tag system
+* Search posts
+1. Engagement
+* Comments system
+* Likes or reactions
+* View counter
+Database Design
+Design a proper schema including:
+* users
+* posts
+* comments
+* likes
+* tags
+* categories
+Deliverables
+Provide the following in order:
+1. Show a visual preview of the website design (homepage, blog page, dashboard) so I can see how the website will look.
+2. Provide the complete project folder structure.
+3. Provide full working code for all files.
+4. Provide database schema and setup instructions.
+5. Provide .env example configuration.
+6. Provide step-by-step instructions to run locally.
+Final Output
+After generating all code:
+* Package the entire project into a single downloadable ZIP file.
+* Ensure the project runs immediately after extracting and installing dependencies.
+The final product should look like a real production blog platform, not a simple demo project.
