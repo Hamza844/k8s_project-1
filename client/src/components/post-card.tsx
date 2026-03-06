@@ -1,64 +1,97 @@
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Eye } from "lucide-react";
+import { Heart, MessageCircle, Eye, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { PostWithAuthor } from "@shared/schema";
 
-export function PostCard({ post, featured = false }: { post: PostWithAuthor; featured?: boolean }) {
+function getReadingTime(content: string) {
+  return Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, "").split(/\s+/).length / 200));
+}
+
+const gradients = [
+  "from-violet-500/20 via-purple-500/10 to-fuchsia-500/20",
+  "from-blue-500/20 via-cyan-500/10 to-teal-500/20",
+  "from-orange-500/20 via-amber-500/10 to-yellow-500/20",
+  "from-rose-500/20 via-pink-500/10 to-red-500/20",
+  "from-emerald-500/20 via-green-500/10 to-lime-500/20",
+];
+
+function getGradient(id: string) {
+  const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return gradients[hash % gradients.length];
+}
+
+export function PostCard({ post, featured = false, index = 0 }: { post: PostWithAuthor; featured?: boolean; index?: number }) {
   const timeAgo = post.publishedAt
     ? formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })
     : formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
+  const readingTime = getReadingTime(post.content);
 
   if (featured) {
     return (
-      <article className="group" data-testid={`card-post-featured-${post.id}`}>
+      <motion.article
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="group"
+        data-testid={`card-post-featured-${post.id}`}
+      >
         <Link href={`/post/${post.slug}`}>
-          <div className="relative rounded-md overflow-hidden aspect-[2/1] mb-5 bg-muted">
+          <div className={`relative rounded-xl overflow-hidden aspect-[2.2/1] mb-6 bg-gradient-to-br ${getGradient(post.id)}`}>
             {post.coverImage ? (
               <img
                 src={post.coverImage}
                 alt={post.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <span className="font-serif text-3xl text-primary/30">Inkwell</span>
+              <div className="w-full h-full flex items-center justify-center relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+                <span className="font-serif text-4xl text-foreground/10 select-none">Inkwell</span>
               </div>
             )}
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
         </Link>
         <div className="space-y-3">
-          {post.category && (
-            <Link href={`/categories/${post.category.slug}`}>
-              <Badge variant="secondary" className="text-xs" data-testid={`badge-category-${post.category.id}`}>
-                {post.category.name}
-              </Badge>
-            </Link>
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            {post.category && (
+              <Link href={`/categories/${post.category.slug}`}>
+                <Badge variant="secondary" className="text-xs font-medium" data-testid={`badge-category-${post.category.id}`}>
+                  {post.category.name}
+                </Badge>
+              </Link>
+            )}
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {readingTime} min read
+            </span>
+          </div>
           <Link href={`/post/${post.slug}`}>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold leading-tight tracking-tight group-hover:text-primary transition-colors" data-testid="text-post-title">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold leading-tight tracking-tight group-hover:text-primary transition-colors duration-300" data-testid="text-post-title">
               {post.title}
             </h2>
           </Link>
           {post.excerpt && (
-            <p className="text-muted-foreground leading-relaxed line-clamp-2" data-testid="text-post-excerpt">
+            <p className="text-muted-foreground leading-relaxed line-clamp-2 text-[15px]" data-testid="text-post-excerpt">
               {post.excerpt}
             </p>
           )}
-          <div className="flex items-center justify-between gap-4 pt-1">
+          <div className="flex items-center justify-between gap-4 pt-2">
             <Link href={`/author/${post.author.username}`}>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-7 w-7">
+              <div className="flex items-center gap-2.5">
+                <Avatar className="h-8 w-8 ring-2 ring-background">
                   <AvatarImage src={post.author.avatarUrl || undefined} alt={post.author.displayName} />
-                  <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
+                  <AvatarFallback className="text-[10px] font-semibold bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
                     {post.author.displayName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="font-medium" data-testid="text-author-name">{post.author.displayName}</span>
-                  <span className="text-muted-foreground">&middot;</span>
-                  <span className="text-muted-foreground" data-testid="text-post-date">{timeAgo}</span>
+                  <span className="text-muted-foreground/50">&middot;</span>
+                  <span className="text-muted-foreground text-xs" data-testid="text-post-date">{timeAgo}</span>
                 </div>
               </div>
             </Link>
@@ -74,18 +107,24 @@ export function PostCard({ post, featured = false }: { post: PostWithAuthor; fea
             </div>
           </div>
         </div>
-      </article>
+      </motion.article>
     );
   }
 
   return (
-    <article className="group flex gap-5" data-testid={`card-post-${post.id}`}>
-      <div className="flex-1 space-y-2 min-w-0">
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.06 }}
+      className="group flex gap-5 py-6 border-b last:border-b-0"
+      data-testid={`card-post-${post.id}`}
+    >
+      <div className="flex-1 space-y-2.5 min-w-0">
         <Link href={`/author/${post.author.username}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <Avatar className="h-5 w-5">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-6 w-6">
               <AvatarImage src={post.author.avatarUrl || undefined} alt={post.author.displayName} />
-              <AvatarFallback className="text-[8px] bg-primary text-primary-foreground">
+              <AvatarFallback className="text-[8px] font-semibold bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
                 {post.author.displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -93,7 +132,7 @@ export function PostCard({ post, featured = false }: { post: PostWithAuthor; fea
           </div>
         </Link>
         <Link href={`/post/${post.slug}`}>
-          <h3 className="font-serif text-lg font-bold leading-snug tracking-tight group-hover:text-primary transition-colors line-clamp-2" data-testid="text-post-title">
+          <h3 className="font-serif text-lg sm:text-xl font-bold leading-snug tracking-tight group-hover:text-primary transition-colors duration-300 line-clamp-2" data-testid="text-post-title">
             {post.title}
           </h3>
         </Link>
@@ -102,8 +141,12 @@ export function PostCard({ post, featured = false }: { post: PostWithAuthor; fea
             {post.excerpt}
           </p>
         )}
-        <div className="flex items-center gap-3 flex-wrap pt-1">
+        <div className="flex items-center gap-3 flex-wrap pt-0.5">
           <span className="text-xs text-muted-foreground" data-testid="text-post-date">{timeAgo}</span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {readingTime} min
+          </span>
           {post.category && (
             <Link href={`/categories/${post.category.slug}`}>
               <Badge variant="secondary" className="text-[10px]" data-testid={`badge-category-${post.category.id}`}>
@@ -120,24 +163,28 @@ export function PostCard({ post, featured = false }: { post: PostWithAuthor; fea
               <MessageCircle className="h-3 w-3" />
               {post.commentCount || 0}
             </span>
-            <span className="flex items-center gap-1" data-testid="text-view-count">
+            <span className="flex items-center gap-1 hidden sm:flex" data-testid="text-view-count">
               <Eye className="h-3 w-3" />
               {post.viewCount}
             </span>
           </div>
         </div>
       </div>
-      {post.coverImage && (
-        <Link href={`/post/${post.slug}`} className="flex-shrink-0">
-          <div className="w-24 h-24 sm:w-32 sm:h-28 rounded-md overflow-hidden bg-muted">
+      <Link href={`/post/${post.slug}`} className="flex-shrink-0">
+        <div className={`w-28 h-28 sm:w-36 sm:h-32 rounded-lg overflow-hidden ${post.coverImage ? "bg-muted" : `bg-gradient-to-br ${getGradient(post.id)}`}`}>
+          {post.coverImage ? (
             <img
               src={post.coverImage}
               alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
             />
-          </div>
-        </Link>
-      )}
-    </article>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="font-serif text-sm text-foreground/10 select-none">Inkwell</span>
+            </div>
+          )}
+        </div>
+      </Link>
+    </motion.article>
   );
 }

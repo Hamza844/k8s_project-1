@@ -38,6 +38,9 @@ Session-based authentication using express-session with PostgreSQL session store
 - Font: Inter (sans), Source Serif 4 (serif), JetBrains Mono (mono)
 - Theme: Light/dark mode with CSS custom properties
 - Responsive: Mobile-first design with breakpoints
+- Animations: framer-motion for page transitions, card entries, and micro-interactions
+- Logo: Feather icon in a primary-colored rounded box
+- UI style: rounded-full buttons/badges, gradient card backgrounds, split-screen auth pages, colored stat cards on dashboard, scroll-aware navbar with backdrop blur
 
 ## Test Accounts
 - sarah@example.com / password123 (Sarah Chen)

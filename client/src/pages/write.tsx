@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Save, Send, X, Loader2, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Save, Send, X, Loader2, Image as ImageIcon, Feather } from "lucide-react";
 import { Link } from "wouter";
 import type { Category, Post, Tag } from "@shared/schema";
 
@@ -103,11 +104,14 @@ export default function WritePage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-20 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-24 text-center">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <Feather className="h-7 w-7 text-primary" />
+        </div>
         <h1 className="font-serif text-2xl font-bold mb-2">Sign in to write</h1>
-        <p className="text-muted-foreground mb-4">You need an account to create posts.</p>
+        <p className="text-muted-foreground mb-6 text-sm">You need an account to create posts.</p>
         <Link href="/login">
-          <Button data-testid="button-login-to-write">Log in</Button>
+          <Button className="rounded-full" data-testid="button-login-to-write">Log in</Button>
         </Link>
       </div>
     );
@@ -115,47 +119,53 @@ export default function WritePage() {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-16 z-40 border-b bg-background/80 backdrop-blur-xl">
+      <div className="sticky top-16 z-40 border-b bg-background/90 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" data-testid="button-back-dashboard">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground" data-testid="button-back-dashboard">
+              <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
           </Link>
           <div className="flex items-center gap-2">
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
+              className="rounded-full gap-2"
               onClick={() => saveMutation.mutate("draft")}
               disabled={!title.trim() || saveMutation.isPending}
               data-testid="button-save-draft"
             >
-              {saveMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              {saveMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
               Save Draft
             </Button>
             <Button
               size="sm"
+              className="rounded-full gap-2"
               onClick={() => saveMutation.mutate("published")}
               disabled={!title.trim() || !content.trim() || saveMutation.isPending}
               data-testid="button-publish"
             >
-              {saveMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              {saveMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               Publish
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8">
-        <div className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mx-auto max-w-3xl px-4 sm:px-6 py-10"
+      >
+        <div className="space-y-8">
           <div>
             <input
               type="text"
               placeholder="Post title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-transparent font-serif text-3xl sm:text-4xl font-bold tracking-tight outline-none placeholder:text-muted-foreground/40"
+              className="w-full bg-transparent font-serif text-3xl sm:text-4xl font-bold tracking-tight outline-none placeholder:text-muted-foreground/30"
               data-testid="input-title"
             />
           </div>
@@ -166,19 +176,19 @@ export default function WritePage() {
               placeholder="Write a brief excerpt..."
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              className="w-full bg-transparent text-lg text-muted-foreground outline-none placeholder:text-muted-foreground/40"
+              className="w-full bg-transparent text-lg text-muted-foreground outline-none placeholder:text-muted-foreground/30"
               data-testid="input-excerpt"
             />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Category</Label>
+            <div className="flex-1 space-y-2">
+              <Label className="text-xs text-muted-foreground font-medium">Category</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger data-testid="select-category">
+                <SelectTrigger className="rounded-lg" data-testid="select-category">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-lg">
                   {categories?.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id} data-testid={`option-category-${cat.id}`}>
                       {cat.name}
@@ -187,29 +197,25 @@ export default function WritePage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex-1 space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Cover Image URL</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  placeholder="https://..."
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  data-testid="input-cover-image"
-                />
-                <Button size="icon" variant="ghost" disabled>
-                  <ImageIcon className="h-4 w-4" />
-                </Button>
-              </div>
+            <div className="flex-1 space-y-2">
+              <Label className="text-xs text-muted-foreground font-medium">Cover Image URL</Label>
+              <Input
+                placeholder="https://..."
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                className="rounded-lg"
+                data-testid="input-cover-image"
+              />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Tags</Label>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground font-medium">Tags</Label>
             <div className="flex items-center gap-2 flex-wrap">
               {selectedTags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="gap-1" data-testid={`badge-selected-tag-${tag}`}>
+                <Badge key={tag} variant="secondary" className="gap-1.5 rounded-full px-3" data-testid={`badge-selected-tag-${tag}`}>
                   #{tag}
-                  <button onClick={() => removeTag(tag)} className="ml-0.5">
+                  <button onClick={() => removeTag(tag)} className="ml-0.5 hover:text-destructive transition-colors">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -224,24 +230,24 @@ export default function WritePage() {
                     addTag();
                   }
                 }}
-                className="w-32 h-7 text-sm"
+                className="w-32 h-8 text-sm rounded-lg"
                 data-testid="input-tag"
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Content (HTML supported)</Label>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground font-medium">Content (HTML supported)</Label>
             <Textarea
               placeholder="Write your post content here... HTML tags are supported for formatting."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[400px] font-mono text-sm leading-relaxed resize-y"
+              className="min-h-[450px] font-mono text-sm leading-relaxed resize-y rounded-lg"
               data-testid="input-content"
             />
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
