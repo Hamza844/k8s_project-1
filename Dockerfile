@@ -15,5 +15,7 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY package.json ./
+COPY drizzle.config.ts ./
+COPY shared ./shared
 EXPOSE 5000
 CMD ["node", "dist/index.cjs"]

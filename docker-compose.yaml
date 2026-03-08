@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: inkwell_db
+    restart: always
+    environment:
+      POSTGRES_USER: inkwell_user
+      POSTGRES_PASSWORD: inkwell_pass
+      POSTGRES_DB: inkwell_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: inkwell_app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://inkwell_user:inkwell_pass@db:5432/inkwell_db
+      SESSION_SECRET: my_super_secret_key_change_this
+      NODE_ENV: production
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
