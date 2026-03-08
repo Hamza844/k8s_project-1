@@ -4,11 +4,9 @@
 
 ### 2-Tier React + PostgreSQL App Deployed on Kubernetes (KIND Cluster)
 
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com/)
+<img width="1786" height="868" alt="image" src="https://github.com/user-attachments/assets/0cf4eeaf-d7e7-4a5d-92eb-ca4145765c9e" />
+<img width="1489" height="821" alt="image" src="https://github.com/user-attachments/assets/281672bd-7317-49ef-a9d7-d0c8db01f11a" />
+<img width="1519" height="857" alt="image" src="https://github.com/user-attachments/assets/c086bd56-5474-4eee-8030-b10959776d1d" />
 
 </div>
 
